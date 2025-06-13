@@ -1,0 +1,15 @@
+<h1>Categories</h1>
+
+<p><strong>Total:</strong> <%= @categories.size %></p>
+
+<% if @categories.present? %>
+  <ul>
+    <% @categories.each do |category| %>
+      <li>
+        <%= link_to category.name.titleize, category_path(category.name) %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No categories found.</p>
+<% end %>

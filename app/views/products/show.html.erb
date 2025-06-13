@@ -1,0 +1,61 @@
+<h1><%= @product.name.titleize %></h1>
+<p><%= @product.description %></p>
+<p><strong>Price:</strong> $<%= @product.price %></p>
+
+<% if policy(@product).edit? %>
+  <%= link_to "Edit Product", edit_category_product_path(@category.name, @product.name) %> |
+  <%= link_to "Delete", category_product_path(@category.name, @product.name),
+               method: :delete, data: { confirm: "Are you sure?" } %>
+<% end %>
+<% if policy(@product).update? %>
+  <%= link_to "Edit", edit_category_product_path(@product.category, @product) %>
+<% end %>
+
+<% if policy(@product).destroy? %>
+  <%= link_to "Delete", category_product_path(@product.category, @product), method: :delete, data: { confirm: "Are you sure?" } %>
+<% end %>
+
+<% if user_signed_in? %>
+  <%= button_to "Add to Cart", cart_cart_items_path(current_user.cart|| current_user.create_cart), params: { cart_item: { product_id: @product.id, quantity: 1 } }, method: :post %>
+<% else %>
+  <p>Please <%= link_to "sign in", new_user_session_path %> to add products to your cart.</p>
+<% end %>
+
+
+
+<h3>Comments (<%= @comments.count %>)</h3>
+<ul>
+  <% @comments.each do |comment| %>
+    <li>
+      <strong><%= comment.user.name %>:</strong> <%= comment.body %>
+
+      <% if user_signed_in? %>
+        <%= form_with(model: [@category, @product, Comment.new], local: true) do |f| %>
+          <%= f.hidden_field :parent_id, value: comment.id %>
+          <%= f.text_area :body, placeholder: "Reply to this comment" %><br>
+          <%= f.submit "Reply" %>
+        <% end %>
+      <% end %>
+
+      <% if comment.replies.any? %>
+        <ul>
+          <% comment.replies.each do |reply| %>
+            <li><strong><%= reply.user.name %>:</strong> <%= reply.body %></li>
+          <% end %>
+        </ul>
+      <% end %>
+    </li>
+  <% end %>
+</ul>
+
+<% if user_signed_in? %>
+  <h4>Add a new comment</h4>
+  <%= form_with(model: [@category, @product, Comment.new], local: true) do |f| %>
+    <%= f.text_area :body, placeholder: "Write your comment here..." %><br>
+    <%= f.submit "Comment" %>
+  <% end %>
+<% else %>
+  <p><%= link_to "Log in", new_user_session_path %> to comment.</p>
+<% end %>
+
+<%= link_to "Back to Category", category_path(@category.name) %>

@@ -1,0 +1,17 @@
+<h1>Your Shopping Cart</h1>
+
+<% if @cart_items.any? %>
+  <ul>
+    <% @cart_items.each do |item| %>
+      <li>
+        <strong><%= item.product.name %></strong><br>
+        Quantity: <%= item.quantity %><br>
+        Price: $<%= item.product.price %><br>
+
+        <%= button_to "Remove", cart_cart_item_path(item), method: :delete %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>Your cart is empty.</p>
+<% end %>
